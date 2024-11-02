@@ -6,8 +6,8 @@ function overpass_get_subregions(path) {
     if (last_admin_level) {
       query += `(r.admin_level_${last_admin_level})`;
     }
-    query += `["${p[1][0]}"="${p[1][1]}"]["type"="boundary"]["admin_level"="${p[2]}"]->.admin_level_${p[2]};`;
-    last_admin_level = "${p[2]}";
+    query += `["${p[1][0]}"="${p[1][1]}"]["type"="boundary"]["admin_level"="${p[2]}"]->.admin_level_${p[2]};\n`;
+    last_admin_level = `${p[2]}`;
   });
   query += `rel(r.admin_level_${last_admin_level}:"subarea");
   out id tags;`;
