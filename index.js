@@ -1,4 +1,4 @@
-const dummyRegions = [["United Kingdom", "UK", 2], ["France", "FR", 2], ["Germany", "DE", 2], ["China", "CN", 2], ["Faerun", "FA", 2]];
+const continents = [["Africa", "", 1], ["Asia", "", 1], ["Europe", "", 1], ["North America", "", 1], ["Oceania", "", 1], ["South America", "", 1]];
 
 const navScreen = document.getElementById("nav-screen");
 const mapScreen = document.getElementById("map-screen");
@@ -7,15 +7,32 @@ const navRow = document.getElementById("nav-row");
 let current_path = [];
 let active_nav_items = [];
 
+const cmpRegions = (r1, r2) => {
+    let k1 = r1[0];
+    let k2 = r2[0];
+    if (k1 < k2) return -1;
+    if (k1 > k2) return 1;
+    return 0;
+}
+
 const getRegions = (path) => {
     return new Promise((res, rej) => {
-        if (path.length == 0) {
-            res(dummyRegions)
+        admin_level = path[path.length - 1][2];
+
+        if (admin_level == 1) {
+            fetch(
+                "continents.json"
+            ).then(res => {
+                if (res.ok) {
+                    return res.json();
+                } else {
+                    throw new Error(`Response status: ${res.status}`);
+                }
+            }).then(data => {
+                res(data[path[0][0]].map(element => [element.name, element.iso_code, 2]).sort(cmpRegions));
+            }).catch(rej);
         } else {
-            console.log(path);
-            let new_level = path[path.length - 1][2] + 1;
-            console.log(new_level);
-            res(dummyRegions.map(elem => [elem[0], elem[1], new_level]));
+            doApiStuff().then(res, rej); // TODO
         }
     });
 }
@@ -63,15 +80,17 @@ const addRegionList = (the_list) => {
         the_name.innerText = element[0];
         the_item.appendChild(the_name);
 
-        let the_button = document.createElement("button");
-        the_button.classList.add("btn");
-        the_button.classList.add("btn-outline-dark");
-        the_button.classList.add("nav-play");
-        the_button.innerText = "Play";
-        the_button.addEventListener("click", () => {
-            playRegion(element);
-        })
-        the_item.appendChild(the_button);
+        if (element[2] > 1) {
+            let the_button = document.createElement("button");
+            the_button.classList.add("btn");
+            the_button.classList.add("btn-outline-dark");
+            the_button.classList.add("nav-play");
+            the_button.innerText = "Play";
+            the_button.addEventListener("click", () => {
+                playRegion(element);
+            })
+            the_item.appendChild(the_button);
+        }
 
         let the_arrow = document.createElement("button");
         the_arrow.classList.add("btn");
@@ -93,5 +112,5 @@ const addRegionList = (the_list) => {
 
 
 window.addEventListener("load", () => {
-    expandRegion(["World", "", 1]);
+    addRegionList(continents);
 });
