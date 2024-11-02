@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title>Tiles</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.maptiler.com/maptiler-sdk-js/v2.3.0/maptiler-sdk.umd.js"></script>
+    <link href="https://cdn.maptiler.com/maptiler-sdk-js/v2.3.0/maptiler-sdk.css" rel="stylesheet"/>
+    <script src="https://cdn.maptiler.com/leaflet-maptilersdk/v2.0.0/leaflet-maptilersdk.js"></script>
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+<div id="map"></div>
+<script>
+    const key = 'INSERT_API_KEY';
+    const map = L.map('map').setView([0, 0], 1);
+    const baseLayer = L.maptilerLayer({
+        apiKey: key,
+        style: "f60f30f5-cbe5-4499-8672-25dc30a2a5d1",
+    }).addTo(map);
+
+
+    var geojsonFeature = {
+        "type": "Feature",
+        "properties": {
+            "name": "Coors Field",
+            "amenity": "Baseball Stadium",
+            "popupContent": "This is where the Rockies play!"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [-104.99404, 39.75621]
+        }
+    };
+
+    var admin_layer = L.geoJSON().addTo(map);
+    admin_layer.addData(geojsonFeature);
+</script>
+</body>
+</html>
