@@ -10,7 +10,7 @@ function overpass_get_subregions(path) {
     last_admin_level = `${p[2]}`;
   });
   query += `rel(r.admin_level_${last_admin_level}:"subarea");
-  out id tags;`;
+out ids tags;`;
   return overpass_query(query).then((j) => {
     j.elements.map((e) => {
       let key = "name";
@@ -37,7 +37,7 @@ function overpass_query(query) {
     // The body contains the query
     // to understand the query language see "The Programmatic Query Language" on
     // https://wiki.openstreetmap.org/wiki/Overpass_API#The_Programmatic_Query_Language_(OverpassQL)
-    body: "data=" + encodeURIComponent(query),
+    body: "data=" + encodeURIComponent("[out:json];\n" + query),
   }).then((res) => {
     if (res.ok) {
       return res.json();
