@@ -29,10 +29,10 @@ const getRegions = (path) => {
                     throw new Error(`Response status: ${res.status}`);
                 }
             }).then(data => {
-                res(data[path[0][0]].map(element => [element.name, element.iso_code, 2]).sort(cmpRegions));
+                res(data[path[0][0]].map(element => [element.name, ["ISO3166-1", element.iso_code], 2]).sort(cmpRegions));
             }).catch(rej);
         } else {
-            doApiStuff().then(res, rej); // TODO
+            overpass_get_subregions(path.slice(1)).then(res, rej); // TODO
         }
     });
 }
