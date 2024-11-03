@@ -24,8 +24,12 @@ let names,
   nameLayerDict = {};
 
 const cmpRegions = (r1, r2) => {
-  let k1 = r1[0];
-  let k2 = r2[0];
+    let k1 = r1[0];
+    let k2 = r2[0];
+    if (r1[2] == 2) {
+        k1 = k1.replace(/[^A-Za-z]/g, '');
+        k2 = k2.replace(/[^A-Za-z]/g, '');
+    }
   if (k1 < k2) return -1;
   if (k1 > k2) return 1;
   return 0;
@@ -134,7 +138,7 @@ function playRandom() {
   }
 }
 
-const playRegion = (the_region) => {
+const playRegion = (the_region, the_button) => {
   let play_path = current_path
     .filter((element) => element[2] < the_region[2])
     .concat([the_region]);
@@ -142,6 +146,11 @@ const playRegion = (the_region) => {
   title.innerHTML = the_region[0];
   // TODO: loading screen
   getPlayData(play_path).then((borders) => {
+    if (borders.features.length == 0) {
+        console.log("Bad game");
+        the_button.classList.add("hidden");
+        return;
+    }
     names = borders.features.map(
       (f) => f.properties["name:en"] || f.properties["name"],
     );
@@ -212,6 +221,9 @@ const playRegion = (the_region) => {
       },
     }).addTo(map);
     map.fitBounds(geoj.getBounds());
+    map.options.minZoom = map.getZoom();
+    map.options.maxBounds = map.getBounds();
+    map.options.maxBoundsViscosity = 1.0;
   });
 };
 
@@ -331,7 +343,7 @@ const addRegionList = (the_list, col) => {
       the_button.classList.add("nav-play");
       the_button.innerText = "Play";
       the_button.addEventListener("click", () => {
-        playRegion(element);
+        playRegion(element, the_button);
       });
       the_item.appendChild(the_button);
     }
