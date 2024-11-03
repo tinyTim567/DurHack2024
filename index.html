@@ -32,13 +32,20 @@
         <div class="container-sm" id="nav-screen">
             <h1>Open Map Guesser</h1>
             <div>
-            Random Game <button class="btn btn-outline-dark nav-play" onclick="playRandom()">Play</button>
-        </div>
-        <p>Choose an area for your game.</p>
+                Random Game
+                <button
+                    class="btn btn-outline-dark nav-play"
+                    onclick="playRandom()"
+                >
+                    Play
+                </button>
+            </div>
+            <p>Choose an area for your game.</p>
             <div class="row" id="nav-row"></div>
         </div>
 
         <div class="hidden" id="map-screen">
+            <div id="map-title-panel"></div>
             <div id="map-side-panel">
                 Click on <span id="targetPlaceName">the boundary</span>
                 <button onclick="showImage()">Show Image</button>
