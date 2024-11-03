@@ -146,6 +146,10 @@ function showImage() {
       })
         .then(r => r.json())
         .then(j => {
+          if (j['photos'].length < 1) {
+            alert('I cannot show you an image of this place');
+            return;
+          }
           let photo = j['photos'][0]['name'];
           open(`https://places.googleapis.com/v1/${photo}/media?maxHeightPx=400&maxWidthPx=400&key=${GOOGLE_PLACE_API_KEY}`, '_blank', 'popup');
         });
