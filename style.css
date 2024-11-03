@@ -26,13 +26,25 @@ body {
 }
 
 #map-screen {
-    display: grid;
-    grid-template-columns: 4fr 1fr;
+    /* display: grid; */
+    /* grid-template-columns: 4fr 1fr;*/
+    height: 100%;
+    width: 100%;
+    position: fixed;
 }
 
 #map {
-    top: 0;
-    bottom: 0;
     width: 100%;
-    height: 600px;
+    height: 100%;
+}
+
+#map-side-panel {
+    width: 100%;
+    height: 48px;
+    color: white;
+    background-color: red;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+}
 }
