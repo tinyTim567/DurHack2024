@@ -156,6 +156,27 @@ function showImage() {
     });
 }
 
+function showMp() {
+  fetch(`https://members-api.parliament.uk/api/Location/Constituency/Search?searchText=${names[0]}`)
+    .then(r => r.json())
+    .then(j => {
+      if (j['items'].length < 1) {
+        alert('Cannot find MP');
+        return;
+      }
+      console.log(j);
+      let mpId = j['items'][0]['value']['currentRepresentation']['member']['value']['id'];
+      fetch(`https://members-api.parliament.uk/api/Members/${mpId}/PortraitUrl`)
+        .then(r => r.json())
+        .then(j => {
+          open(j['value'], '_blank', 'popup')
+        })
+        .catch(e => {
+          alert('Cannot show MP');
+        });
+    });
+}
+
 function playRandom() {
   // play random country if only continent or non is selected or selected sub region
   if (current_path.length == 0) {
@@ -176,6 +197,11 @@ const playRegion = (the_region, the_button) => {
     .concat([the_region]);
   let title = document.getElementById("map-title-panel");
   title.innerHTML = the_region[0];
+  if (the_region[1][1].startsWith('GB-')) {
+    showMpButton.classList.remove("hidden");
+  } else {
+    showMpButton.classList.add("hidden");
+  }
   // TODO: loading screen
   getPlayData(play_path).then((borders) => {
     if (borders.features.length == 0) {
