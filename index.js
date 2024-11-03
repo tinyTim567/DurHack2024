@@ -118,7 +118,7 @@ const playRegion = (the_region) => {
             } else {
                 tries -= 1;
                 e.target.setStyle({color: "red"});
-                setTimeout(() => e.target.setStyle({color: "blue"}), 500);
+                setTimeout(() => e.target.setStyle({color: "#3388ff"}), 500);
                 if (tries == 0) {
                     hint();
                 }
