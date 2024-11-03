@@ -68,16 +68,28 @@ function shuffleArray(array) {
     }
 }
 
+const gameOver = () => {
+    // TODO
+}
+
+const nextName = () => {
+    // TODO
+    tries = 3;
+}
+
+const hint = () => {
+    // TODO
+}
+
 const playRegion = (the_region) => {
     let play_path = current_path.filter(element => element[2] < the_region[2]).concat([the_region]);
     // TODO: loading screen
     getPlayData(play_path).then((borders) => {
         console.log(borders);
-        names = borders.features.map(f => f.properties["name"] || f.properties["name:en"]);
+        names = borders.features.map(f => f.properties["name:en"] || f.properties["name"]);
         shuffleArray(names);
         console.log(names);
         score = 0;
-        tries = 3;
         navScreen.classList.add("hidden");
         mapScreen.classList.remove("hidden");
         const key = 'qkOKp14TlTpS6tZnCYBN';
@@ -86,16 +98,17 @@ const playRegion = (the_region) => {
             apiKey: key,
             style: "f60f30f5-cbe5-4499-8672-25dc30a2a5d1",
         }).addTo(map);
+        nextName();
         let handleClick = (e) => {
             if (e.target._path.getAttribute("data-chosen") == "true") {
                 return;
             }
             let props = e.target.feature.properties
-            let this_name = props["name"] || props["name:en"];
+            let this_name = props["name:en"] || props["name"];
             if (this_name == names[0]) {
                 names = names.slice(1);
                 score += tries;
-                e.target.setStyle({color: "green"}); // TODO: nicer colour
+                e.target.setStyle({color: "green"}); // TODO: sort out colours properly
                 e.target._path.setAttribute("data-chosen", "true");
                 if (names.length == 0) {
                     gameOver();
@@ -103,7 +116,12 @@ const playRegion = (the_region) => {
                     nextName();
                 }
             } else {
-                console.log("wrong"); // TODO
+                tries -= 1;
+                e.target.setStyle({color: "red"});
+                setTimeout(() => e.target.setStyle({color: "blue"}), 500);
+                if (tries == 0) {
+                    hint();
+                }
             }
         };
         let geoj = L.geoJSON(borders, {onEachFeature: (feature, layer) => {layer.on({click: handleClick})}}).addTo(map);
