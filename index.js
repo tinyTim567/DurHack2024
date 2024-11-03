@@ -131,12 +131,17 @@ function playRandom() {
   }
 }
 
-const playRegion = (the_region) => {
+const playRegion = (the_region, the_button) => {
   let play_path = current_path
     .filter((element) => element[2] < the_region[2])
     .concat([the_region]);
   // TODO: loading screen
   getPlayData(play_path).then((borders) => {
+    if (borders.features.length == 0) {
+        console.log("Bad game");
+        the_button.classList.add("hidden");
+        return;
+    }
     names = borders.features.map(
       (f) => f.properties["name:en"] || f.properties["name"],
     );
@@ -306,7 +311,7 @@ const addRegionList = (the_list, col) => {
       the_button.classList.add("nav-play");
       the_button.innerText = "Play";
       the_button.addEventListener("click", () => {
-        playRegion(element);
+        playRegion(element, the_button);
       });
       the_item.appendChild(the_button);
     }
