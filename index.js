@@ -215,7 +215,7 @@ const playRegion = (the_region, the_button) => {
         e.target.setStyle({ color: "#ba1a1a" });
         setTimeout(() => {
           e.target._path.setAttribute("data-flashing", "false");
-          e.target.setStyle({ color: "#75796c" });
+          e.target.setStyle({ color: "#3388ff" });
         }, 500);
         if (tries == 0) {
           hint();

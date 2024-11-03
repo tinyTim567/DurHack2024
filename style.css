@@ -56,8 +56,8 @@ body {
 }
 
 .top-app-bar {
-    background-color: var(--primary-container);
-    color: var(--on-primary-container);
+    background-color: var(--on-surface);
+    color: var(--surface);
     padding: 8px;
 
     h1{
@@ -117,19 +117,21 @@ body {
 }
 
 #map-side-panel {
-    height: 48px;
-    color: var(--on-primary);
-    background-color: var(--primary);
+    height: auto;
+    color: var(--on-primary-container);
+    background-color: var(--primary-container);
     text-align: center;
-    font-size: 28px;
+    font-size: x-large;
     font-weight: bold;
+    padding: 8px;
 }
 
 #map-title-panel {
-    height: 32px;
-    color: white;
-    background-color: blue;
-    font-size: 18px;
+    height: auto;
+    color: var(--on-tertiary);
+    background-color: var(--tertiary);
+    font-size: larger;
+    padding: 8px;
 }
 
 .text-button {
@@ -137,4 +139,12 @@ body {
     border: none;
     background-color: inherit;
     font-weight: bold;
+}
+
+.show-button {
+    color: var(--on-primary-container);
+    background-color: inherit;
+    border: none;
+    text-decoration: underline;
+    margin-left: 50px;
 }
