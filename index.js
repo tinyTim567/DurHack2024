@@ -200,6 +200,9 @@ const playRegion = (the_region, the_button) => {
       },
     }).addTo(map);
     map.fitBounds(geoj.getBounds());
+    map.options.minZoom = map.getZoom();
+    map.options.maxBounds = map.getBounds();
+    map.options.maxBoundsViscosity = 1.0;
   });
 };
 
