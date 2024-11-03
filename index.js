@@ -51,23 +51,28 @@ const getRegions = (path) => {
 }
 
 const getPlayData = (path) => {
-    return new Promise((res, rej) => {
-        overpass_get_bb(path).then(bounds => {
-            return overpass_get_subregions_with_geom(path).then(borders => {
-                res(bounds, borders);
-            });
-        }).catch(rej)
+    return overpass_get_subregions_with_geom(path.slice(1)).then(borders => {
+        borders["features"] = borders["features"].filter(f => f["id"].startsWith("relation/"));
+        return borders;
     });
 }
 
 const playRegion = (the_region) => {
     let play_path = current_path.filter(element => element[2] < the_region[2]).concat([the_region]);
     // TODO: loading screen
-    getPlayData(play_path).then((the_data) => {
-        // TODO: put data in the map screen
-        // TODO: wait for the map screen to finish loading
-            // TODO: remove loading screen
-            // TODO: hide the nav screen and show the map screen
+    getPlayData(play_path).then((borders) => {
+        let names = borders.features.map(f => f["name"] || f["name:en"]);
+        navScreen.classList.add("hidden");
+        mapScreen.classList.remove("hidden");
+        const key = 'qkOKp14TlTpS6tZnCYBN';
+        const map = L.map('map').setView([0, 0], 1);
+        const baseLayer = L.maptilerLayer({
+            apiKey: key,
+            style: "f60f30f5-cbe5-4499-8672-25dc30a2a5d1",
+        }).addTo(map);
+        let handleClick = (e) => {console.log(e)}; // TODO
+        let geoj = L.geoJSON(borders, {onEachFeature: (feature, layer) => {layer.on({click: handleClick})}}).addTo(map);
+        map.fitBounds(geoj.getBounds());
     });
 }
 
@@ -208,26 +213,21 @@ window.addEventListener("load", () => {
     addRegionList(continents, 0);
 });
 
-const key = 'qkOKp14TlTpS6tZnCYBN';
-const map = L.map('map').setView([0, 0], 1);
-const baseLayer = L.maptilerLayer({
-    apiKey: key,
-    style: "f60f30f5-cbe5-4499-8672-25dc30a2a5d1",
-}).addTo(map);
 
 
-var geojsonFeature = {
-    "type": "Feature",
-    "properties": {
-        "name": "Coors Field",
-        "amenity": "Baseball Stadium",
-        "popupContent": "This is where the Rockies play!"
-    },
-    "geometry": {
-        "type": "Point",
-        "coordinates": [-104.99404, 39.75621]
-    }
-};
 
-var admin_layer = L.geoJSON().addTo(map);
-admin_layer.addData(geojsonFeature);
+// var geojsonFeature = {
+//     "type": "Feature",
+//     "properties": {
+//         "name": "Coors Field",
+//         "amenity": "Baseball Stadium",
+//         "popupContent": "This is where the Rockies play!"
+//     },
+//     "geometry": {
+//         "type": "Point",
+//         "coordinates": [-104.99404, 39.75621]
+//     }
+// };
+
+// var admin_layer = L.geoJSON().addTo(map);
+// admin_layer.addData(geojsonFeature);

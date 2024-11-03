@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@maptiler/sdk": "^2.4.1"
+    "@maptiler/sdk": "^2.4.1",
+    "osm2geojson-lite": "^0.9.4"
   }
 }

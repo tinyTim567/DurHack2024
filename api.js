@@ -67,7 +67,7 @@ function overpass_get_subregions_with_geom(path) {
   query += `rel(r.admin_level_${last_admin_level}:"subarea");
   out geom;`;
   return overpass_query(query).then((j) => {
-    return j.elements;
+    return osm2geojson(j, {"allFeatures": true, "renderTagged": true});
   });
 }
 
