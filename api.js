@@ -49,7 +49,6 @@ function overpass_get_bb(path) {
   });
   query += `.admin_level_${last_admin_level} out ids bb;`;
   return overpass_query(query).then((j) => {
-    console.log(j)
     return j.elements[0].bounds;
   });
 }

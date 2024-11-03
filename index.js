@@ -50,6 +50,16 @@ const getRegions = (path) => {
     });
 }
 
+const getPlayData = (path) => {
+    return new Promise((res, rej) => {
+        overpass_get_bb(path).then(bounds => {
+            return overpass_get_subregions_with_geom(path).then(borders => {
+                res(bounds, borders);
+            });
+        }).catch(rej)
+    });
+}
+
 const playRegion = (the_region) => {
     let play_path = current_path.filter(element => element[2] < the_region[2]).concat([the_region]);
     // TODO: loading screen
