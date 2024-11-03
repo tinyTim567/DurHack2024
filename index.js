@@ -112,11 +112,11 @@ const hint = () => {
   let switchColour = () => {
     if (tries == 0) {
       nameLayerDict[names[0]]._path.setAttribute("data-flashing", "true");
-      nameLayerDict[names[0]].setStyle({ color: "initial" });
+      nameLayerDict[names[0]].setStyle({ color: "#75796c" });
       setTimeout(() => {
         if (tries == 0) {
           nameLayerDict[names[0]]._path.setAttribute("data-flashing", "false");
-          nameLayerDict[names[0]].setStyle({ color: "#3388ff" });
+          nameLayerDict[names[0]].setStyle({ color: "#ee00ff" });
           setTimeout(switchColour, 250);
         }
       }, 500);
@@ -202,7 +202,7 @@ const playRegion = (the_region, the_button) => {
       if (this_name == names[0]) {
         names = names.slice(1);
         score += tries;
-        e.target.setStyle({ color: "green", fillOpacity: 0.7 }); // TODO: sort out colours properly
+        e.target.setStyle({ color: "#4c662b", fillOpacity: 0.7 }); // TODO: sort out colours properly
         e.target._path.setAttribute("data-chosen", "true");
         if (names.length == 0) {
           gameOver();
@@ -212,7 +212,7 @@ const playRegion = (the_region, the_button) => {
       } else {
         if (tries > 0) tries -= 1;
         e.target._path.setAttribute("data-flashing", "true");
-        e.target.setStyle({ color: "red" });
+        e.target.setStyle({ color: "#ba1a1a" });
         setTimeout(() => {
           e.target._path.setAttribute("data-flashing", "false");
           e.target.setStyle({ color: "#3388ff" });
@@ -358,6 +358,7 @@ const addRegionList = (the_list, col) => {
   the_list.forEach((element) => {
     let the_item = document.createElement("div");
     the_item.classList.add("nav-item");
+    the_item.classList.add("card");
 
     let the_name = document.createElement("span");
     the_name.classList.add("nav-name");
