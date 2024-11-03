@@ -53,6 +53,39 @@ function overpass_get_bb(path) {
   });
 }
 
+function overpass_get_subregions_with_geom(path) {
+  query = "";
+  last_admin_level = "";
+  path.forEach((p) => {
+    query += `relation`;
+    if (last_admin_level) {
+      query += `(r.admin_level_${last_admin_level})`;
+    }
+    query += `["${p[1][0]}"="${p[1][1]}"]["type"="boundary"]["admin_level"="${p[2]}"]->.admin_level_${p[2]};\n`;
+    last_admin_level = `${p[2]}`;
+  });
+  query += `rel(r.admin_level_${last_admin_level}:"subarea");
+  out geom;`;
+  return overpass_query(query).then((j) => {
+    return j.elements.map((e) => {
+      let key = "name";
+      // try to find an appropriate identifier for this subregion
+      if (e.tags["ISO3166-2"]) {
+        key = "ISO3166-2";
+      } else if (e.tags["ref"]) {
+        key = "ref";
+      } else if (e.tags["official_name"]) {
+        key = "official_name";
+      }
+      return [
+        e.tags["name:en"] || e.tags["name"],
+        [key, e.tags[key]],
+        nanToInf(parseInt(e.tags.admin_level)),
+      ];
+    });
+  });
+}
+
 function overpass_query(query) {
   return fetch("https://overpass-api.de/api/interpreter", {
     method: "POST",
