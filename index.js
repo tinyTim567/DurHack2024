@@ -16,6 +16,7 @@ let cache = {};
 let current_path = [];
 let active_nav_items = [];
 let the_list_ = [];
+let play_path = [];
 
 let names,
   score = 0,
@@ -120,6 +121,33 @@ const hint = () => {
   switchColour();
 };
 
+function showImage() {
+  const GOOGLE_PLACE_API_KEY = 'AIzaSyAspG4zf-_M5nsksGoxiHQW1y1y_3Wsyq0';
+  let place = [names[0]].concat(play_path.slice(1).toReversed().map(p => p[0])).join(', ');
+  fetch(`https://places.googleapis.com/v1/places:autocomplete`, {
+    method: 'POST',
+    headers: {
+      'X-Goog-Api-Key': GOOGLE_PLACE_API_KEY,
+    },
+    body: JSON.stringify({ input: place }),
+  })
+    .then(r => r.json())
+    .then(j => {
+      let placeId = j['suggestions'][0]['placePrediction']['placeId'];
+      fetch(`https://places.googleapis.com/v1/places/${placeId}`, {
+        headers: {
+          'X-Goog-Api-Key': GOOGLE_PLACE_API_KEY,
+          'X-Goog-FieldMask': 'id,displayName,photos',
+        },
+      })
+        .then(r => r.json())
+        .then(j => {
+          let photo = j['photos'][0]['name'];
+          open(`https://places.googleapis.com/v1/${photo}/media?maxHeightPx=400&maxWidthPx=400&key=${GOOGLE_PLACE_API_KEY}`, '_blank', 'popup');
+        });
+    });
+}
+
 function playRandom() {
   // play random country if only continent or non is selected or selected sub region
   if (current_path.length == 0) {
@@ -132,7 +160,7 @@ function playRandom() {
 }
 
 const playRegion = (the_region, the_button) => {
-  let play_path = current_path
+  play_path = current_path
     .filter((element) => element[2] < the_region[2])
     .concat([the_region]);
   // TODO: loading screen
