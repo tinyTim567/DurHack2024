@@ -69,11 +69,11 @@ function shuffleArray(array) {
 }
 
 const gameOver = () => {
-    // TODO
+    document.getElementById('map-side-panel').innerText = `Game over! Your score is ${score}.`;
 }
 
 const nextName = () => {
-    // TODO
+    document.getElementById('targetPlaceName').innerText = names[0];
     tries = 3;
 }
 

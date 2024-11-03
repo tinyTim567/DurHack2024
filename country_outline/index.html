@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Leaflet Map</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    /* Set the size of the map */
+    #map {
+      height: 600px;
+      /* Set the height of the map */
+      width: 100%;
+      /* Set the width of the map */
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>My Simple Leaflet Map</h1>
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Initialize the map
+    var map = L.map('map').setView([51.505, -0.09], 13); // Set the center and zoom level
+
+    // Add a tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    // [out:json]; rel["ISO3166-1"="US"][admin_level=2];out geom;
+    fetch('/us.geojson').then(r => r.json()).then(t => {
+      t['features'] = t['features'].filter(f => f['geometry']['type'] === 'MultiPolygon');
+      L.geoJSON(t, {
+    }).addTo(map);
+    });
+  </script>
+
+</body>
+
+</html>
