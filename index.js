@@ -195,18 +195,22 @@ const playRegion = (the_region) => {
 };
 
 const expandRegion = (the_region, col) => {
-    current_path = current_path.slice(0,col)
-    active_nav_items.slice(col).forEach(elem => {elem.classList.remove("active");});
-    active_nav_items = active_nav_items.slice(0,col)
-    while (navRow.childElementCount > col+1) {navRow.removeChild(navRow.lastElementChild);}
-    // TODO: loading screen
+  current_path = current_path.slice(0, col)
+  active_nav_items.slice(col).forEach(elem => { elem.classList.remove("active"); });
+  active_nav_items = active_nav_items.slice(0, col)
+  while (navRow.childElementCount > col + 1) { navRow.removeChild(navRow.lastElementChild); }
+  // TODO: loading screen
+  return new Promise((res, rej) => {
     getRegions(current_path.concat([the_region])).then((the_list) => {
-        // TODO: remove loading screen
-        if (the_region.length != 0) {
-            current_path.push(the_region);
-        }
-        addRegionList(the_list, col+1)
-    });
+      the_list_ = the_list;
+      // TODO: remove loading screen
+      if (the_region.length != 0) {
+        current_path.push(the_region);
+      }
+      addRegionList(the_list, col + 1);
+      res();
+    })
+  });
 }
 
 /*
