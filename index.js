@@ -9,6 +9,8 @@ let cache = {};
 let current_path = [];
 let active_nav_items = [];
 
+let names, score, tries;
+
 const cmpRegions = (r1, r2) => {
     let k1 = r1[0];
     let k2 = r2[0];
@@ -57,11 +59,25 @@ const getPlayData = (path) => {
     });
 }
 
+function shuffleArray(array) {
+    for (var i = array.length - 1; i >= 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
 const playRegion = (the_region) => {
     let play_path = current_path.filter(element => element[2] < the_region[2]).concat([the_region]);
     // TODO: loading screen
     getPlayData(play_path).then((borders) => {
-        let names = borders.features.map(f => f["name"] || f["name:en"]);
+        console.log(borders);
+        names = borders.features.map(f => f.properties["name"] || f.properties["name:en"]);
+        shuffleArray(names);
+        console.log(names);
+        score = 0;
+        tries = 3;
         navScreen.classList.add("hidden");
         mapScreen.classList.remove("hidden");
         const key = 'qkOKp14TlTpS6tZnCYBN';
@@ -70,7 +86,26 @@ const playRegion = (the_region) => {
             apiKey: key,
             style: "f60f30f5-cbe5-4499-8672-25dc30a2a5d1",
         }).addTo(map);
-        let handleClick = (e) => {console.log(e)}; // TODO
+        let handleClick = (e) => {
+            if (e.target._path.getAttribute("data-chosen") == "true") {
+                return;
+            }
+            let props = e.target.feature.properties
+            let this_name = props["name"] || props["name:en"];
+            if (this_name == names[0]) {
+                names = names.slice(1);
+                score += tries;
+                e.target.setStyle({color: "green"}); // TODO: nicer colour
+                e.target._path.setAttribute("data-chosen", "true");
+                if (names.length == 0) {
+                    gameOver();
+                } else {
+                    nextName();
+                }
+            } else {
+                console.log("wrong"); // TODO
+            }
+        };
         let geoj = L.geoJSON(borders, {onEachFeature: (feature, layer) => {layer.on({click: handleClick})}}).addTo(map);
         map.fitBounds(geoj.getBounds());
     });
