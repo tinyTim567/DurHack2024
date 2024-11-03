@@ -38,8 +38,7 @@
     // [out:json]; rel["ISO3166-1"="US"][admin_level=2];out geom;
     fetch('/us.geojson').then(r => r.json()).then(t => {
       t['features'] = t['features'].filter(f => f['geometry']['type'] === 'MultiPolygon');
-      L.geoJSON(t, {
-    }).addTo(map);
+      L.geoJSON(t, {}).addTo(map);
     });
   </script>
 
