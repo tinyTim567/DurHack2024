@@ -96,6 +96,7 @@ const gameOver = () => {
 };
 
 const nextName = () => {
+  console.log(names);
   document.getElementById("targetPlaceName").innerText = names[0];
   tries = 3;
 };
@@ -104,9 +105,11 @@ const hint = () => {
   // Very clear hint: give them the answer and physically stop them from clicking on anything else
   let switchColour = () => {
     if (tries == 0) {
+        nameLayerDict[names[0]]._path.setAttribute("data-flashing", "true");
       nameLayerDict[names[0]].setStyle({ color: "initial" });
       setTimeout(() => {
         if (tries == 0) {
+            nameLayerDict[names[0]]._path.setAttribute("data-flashing", "false");
           nameLayerDict[names[0]].setStyle({ color: "#3388ff" });
           setTimeout(switchColour, 250);
         }
@@ -152,10 +155,14 @@ const playRegion = (the_region) => {
         } else {
           nextName();
         }
-      } else if (tries > 0) {
-        tries -= 1;
+      } else {
+        if (tries > 0) tries -= 1;
+        e.target._path.setAttribute("data-flashing", "true");
         e.target.setStyle({ color: "red" });
-        setTimeout(() => e.target.setStyle({ color: "#3388ff" }), 500);
+        setTimeout(() => {
+            e.target._path.setAttribute("data-flashing", "false");
+            e.target.setStyle({ color: "#3388ff" });
+        }, 500);
         if (tries == 0) {
           hint();
         }
@@ -164,6 +171,8 @@ const playRegion = (the_region) => {
     let geoj = L.geoJSON(borders, {
       onEachFeature: (feature, layer) => {
         layer.on({ click: handleClick });
+        layer.on({ mouseover: () => {if (layer._path.getAttribute("data-chosen") != "true" && layer._path.getAttribute("data-flashing") != "true") layer.setStyle({color: "#3a33ff"})} });
+        layer.on({ mouseout: () => {if (layer._path.getAttribute("data-chosen") != "true" && layer._path.getAttribute("data-flashing") != "true") layer.setStyle({color: "#3388ff"})} });
         nameLayerDict[
           feature.properties["name:en"] || feature.properties["name"]
         ] = layer;
