@@ -146,8 +146,33 @@ function showImage() {
       })
         .then(r => r.json())
         .then(j => {
+          if (j['photos'].length < 1) {
+            alert('I cannot show you an image of this place');
+            return;
+          }
           let photo = j['photos'][0]['name'];
           open(`https://places.googleapis.com/v1/${photo}/media?maxHeightPx=400&maxWidthPx=400&key=${GOOGLE_PLACE_API_KEY}`, '_blank', 'popup');
+        });
+    });
+}
+
+function showMp() {
+  fetch(`https://members-api.parliament.uk/api/Location/Constituency/Search?searchText=${names[0]}`)
+    .then(r => r.json())
+    .then(j => {
+      if (j['items'].length < 1) {
+        alert('Cannot find MP');
+        return;
+      }
+      console.log(j);
+      let mpId = j['items'][0]['value']['currentRepresentation']['member']['value']['id'];
+      fetch(`https://members-api.parliament.uk/api/Members/${mpId}/PortraitUrl`)
+        .then(r => r.json())
+        .then(j => {
+          open(j['value'], '_blank', 'popup')
+        })
+        .catch(e => {
+          alert('Cannot show MP');
         });
     });
 }
@@ -172,6 +197,11 @@ const playRegion = (the_region, the_button) => {
     .concat([the_region]);
   let title = document.getElementById("map-title-panel");
   title.innerHTML = the_region[0];
+  if (the_region[1][1].startsWith('GB-')) {
+    showMpButton.classList.remove("hidden");
+  } else {
+    showMpButton.classList.add("hidden");
+  }
   // TODO: loading screen
   getPlayData(play_path).then((borders) => {
     if (borders.features.length == 0) {
