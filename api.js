@@ -67,22 +67,7 @@ function overpass_get_subregions_with_geom(path) {
   query += `rel(r.admin_level_${last_admin_level}:"subarea");
   out geom;`;
   return overpass_query(query).then((j) => {
-    return j.elements.map((e) => {
-      let key = "name";
-      // try to find an appropriate identifier for this subregion
-      if (e.tags["ISO3166-2"]) {
-        key = "ISO3166-2";
-      } else if (e.tags["ref"]) {
-        key = "ref";
-      } else if (e.tags["official_name"]) {
-        key = "official_name";
-      }
-      return [
-        e.tags["name:en"] || e.tags["name"],
-        [key, e.tags[key]],
-        nanToInf(parseInt(e.tags.admin_level)),
-      ];
-    });
+    return j.elements;
   });
 }
 
