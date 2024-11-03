@@ -197,3 +197,27 @@ const addRegionList = (the_list, col) => {
 window.addEventListener("load", () => {
     addRegionList(continents, 0);
 });
+
+const key = 'qkOKp14TlTpS6tZnCYBN';
+const map = L.map('map').setView([0, 0], 1);
+const baseLayer = L.maptilerLayer({
+    apiKey: key,
+    style: "f60f30f5-cbe5-4499-8672-25dc30a2a5d1",
+}).addTo(map);
+
+
+var geojsonFeature = {
+    "type": "Feature",
+    "properties": {
+        "name": "Coors Field",
+        "amenity": "Baseball Stadium",
+        "popupContent": "This is where the Rockies play!"
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": [-104.99404, 39.75621]
+    }
+};
+
+var admin_layer = L.geoJSON().addTo(map);
+admin_layer.addData(geojsonFeature);
