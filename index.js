@@ -16,7 +16,11 @@ let cache = {};
 let current_path = [];
 let active_nav_items = [];
 
-let names, score, tries;
+let names,
+  score = 0,
+  maxscore,
+  tries,
+  nameLayerDict = {};
 
 const cmpRegions = (r1, r2) => {
   let k1 = r1[0];
@@ -88,7 +92,7 @@ function shuffleArray(array) {
 
 const gameOver = () => {
   document.getElementById("map-side-panel").innerText =
-    `Game over! Your score is ${score}.`;
+    `Game over! Your score is ${score}/${maxscore} (${Math.round((100 * score) / maxscore)}%).`;
 };
 
 const nextName = () => {
@@ -97,7 +101,19 @@ const nextName = () => {
 };
 
 const hint = () => {
-  // TODO
+  // Very clear hint: give them the answer and physically stop them from clicking on anything else
+  let switchColour = () => {
+    if (tries == 0) {
+      nameLayerDict[names[0]].setStyle({ color: "initial" });
+      setTimeout(() => {
+        if (tries == 0) {
+          nameLayerDict[names[0]].setStyle({ color: "#3388ff" });
+          setTimeout(switchColour, 250);
+        }
+      }, 500);
+    }
+  };
+  switchColour();
 };
 
 const playRegion = (the_region) => {
@@ -106,13 +122,11 @@ const playRegion = (the_region) => {
     .concat([the_region]);
   // TODO: loading screen
   getPlayData(play_path).then((borders) => {
-    console.log(borders);
     names = borders.features.map(
       (f) => f.properties["name:en"] || f.properties["name"],
     );
     shuffleArray(names);
-    console.log(names);
-    score = 0;
+    maxscore = names.length * 3; // TODO: change if we change the scoring system
     navScreen.classList.add("hidden");
     mapScreen.classList.remove("hidden");
     const key = "qkOKp14TlTpS6tZnCYBN";
@@ -131,17 +145,17 @@ const playRegion = (the_region) => {
       if (this_name == names[0]) {
         names = names.slice(1);
         score += tries;
-        e.target.setStyle({ color: "green" }); // TODO: sort out colours properly
+        e.target.setStyle({ color: "green", fillOpacity: 0.7 }); // TODO: sort out colours properly
         e.target._path.setAttribute("data-chosen", "true");
         if (names.length == 0) {
           gameOver();
         } else {
           nextName();
         }
-      } else {
+      } else if (tries > 0) {
         tries -= 1;
         e.target.setStyle({ color: "red" });
-        setTimeout(() => e.target.setStyle({ color: "blue" }), 500);
+        setTimeout(() => e.target.setStyle({ color: "#3388ff" }), 500);
         if (tries == 0) {
           hint();
         }
@@ -150,6 +164,9 @@ const playRegion = (the_region) => {
     let geoj = L.geoJSON(borders, {
       onEachFeature: (feature, layer) => {
         layer.on({ click: handleClick });
+        nameLayerDict[
+          feature.properties["name:en"] || feature.properties["name"]
+        ] = layer;
       },
     }).addTo(map);
     map.fitBounds(geoj.getBounds());
