@@ -1,7 +1,7 @@
-const nanToInf = x => {
+const nanToInf = (x) => {
   if (isNaN(x)) return Infinity;
   return x;
-}
+};
 
 function overpass_get_subregions(path) {
   query = "";
@@ -33,6 +33,23 @@ out ids tags;`;
         nanToInf(parseInt(e.tags.admin_level)),
       ];
     });
+  });
+}
+
+function overpass_get_bb(path) {
+  query = "";
+  last_admin_level = "";
+  path.forEach((p) => {
+    query += `relation`;
+    if (last_admin_level) {
+      query += `(r.admin_level_${last_admin_level})`;
+    }
+    query += `["${p[1][0]}"="${p[1][1]}"]["type"="boundary"]["admin_level"="${p[2]}"]->.admin_level_${p[2]};\n`;
+    last_admin_level = `${p[2]}`;
+  });
+  query += `.admin_level_${last_admin_level} out ids bb;`;
+  return overpass_query(query).then((j) => {
+    return j.bounds;
   });
 }
 
