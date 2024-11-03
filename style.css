@@ -110,14 +110,26 @@ body {
     height: 100%;
 }
 
-#map-side-panel {
+#map-side-panel,
+#map-title-panel {
     width: 100%;
+    text-align: center;
+}
+
+#map-side-panel {
     height: 48px;
     color: var(--on-primary);
     background-color: var(--primary);
     text-align: center;
     font-size: 28px;
     font-weight: bold;
+}
+
+#map-title-panel {
+    height: 32px;
+    color: white;
+    background-color: blue;
+    font-size: 18px;
 }
 
 .text-button {

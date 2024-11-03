@@ -16,6 +16,7 @@ let cache = {};
 let current_path = [];
 let active_nav_items = [];
 let the_list_ = [];
+let play_path = [];
 
 let names,
   score = 0,
@@ -24,8 +25,12 @@ let names,
   nameLayerDict = {};
 
 const cmpRegions = (r1, r2) => {
-  let k1 = r1[0];
-  let k2 = r2[0];
+    let k1 = r1[0];
+    let k2 = r2[0];
+    if (r1[2] == 2) {
+        k1 = k1.replace(/[^A-Za-z]/g, '');
+        k2 = k2.replace(/[^A-Za-z]/g, '');
+    }
   if (k1 < k2) return -1;
   if (k1 > k2) return 1;
   return 0;
@@ -106,11 +111,11 @@ const hint = () => {
   // Very clear hint: give them the answer and physically stop them from clicking on anything else
   let switchColour = () => {
     if (tries == 0) {
-        nameLayerDict[names[0]]._path.setAttribute("data-flashing", "true");
+      nameLayerDict[names[0]]._path.setAttribute("data-flashing", "true");
       nameLayerDict[names[0]].setStyle({ color: "#75796c" });
       setTimeout(() => {
         if (tries == 0) {
-            nameLayerDict[names[0]]._path.setAttribute("data-flashing", "false");
+          nameLayerDict[names[0]]._path.setAttribute("data-flashing", "false");
           nameLayerDict[names[0]].setStyle({ color: "#ee00ff" });
           setTimeout(switchColour, 250);
         }
@@ -120,10 +125,40 @@ const hint = () => {
   switchColour();
 };
 
+function showImage() {
+  const GOOGLE_PLACE_API_KEY = 'AIzaSyAspG4zf-_M5nsksGoxiHQW1y1y_3Wsyq0';
+  let place = [names[0]].concat(play_path.slice(1).toReversed().map(p => p[0])).join(', ');
+  fetch(`https://places.googleapis.com/v1/places:autocomplete`, {
+    method: 'POST',
+    headers: {
+      'X-Goog-Api-Key': GOOGLE_PLACE_API_KEY,
+    },
+    body: JSON.stringify({ input: place }),
+  })
+    .then(r => r.json())
+    .then(j => {
+      let placeId = j['suggestions'][0]['placePrediction']['placeId'];
+      fetch(`https://places.googleapis.com/v1/places/${placeId}`, {
+        headers: {
+          'X-Goog-Api-Key': GOOGLE_PLACE_API_KEY,
+          'X-Goog-FieldMask': 'id,displayName,photos',
+        },
+      })
+        .then(r => r.json())
+        .then(j => {
+          let photo = j['photos'][0]['name'];
+          open(`https://places.googleapis.com/v1/${photo}/media?maxHeightPx=400&maxWidthPx=400&key=${GOOGLE_PLACE_API_KEY}`, '_blank', 'popup');
+        });
+    });
+}
+
 function playRandom() {
   // play random country if only continent or non is selected or selected sub region
   if (current_path.length == 0) {
-    expandRegion(continents[Math.floor(Math.random() * continents.length)], 1).then(() => {
+    expandRegion(
+      continents[Math.floor(Math.random() * continents.length)],
+      1,
+    ).then(() => {
       playRegion(the_list_[Math.floor(Math.random() * the_list_.length)]);
     });
   } else {
@@ -132,9 +167,11 @@ function playRandom() {
 }
 
 const playRegion = (the_region, the_button) => {
-  let play_path = current_path
+  play_path = current_path
     .filter((element) => element[2] < the_region[2])
     .concat([the_region]);
+  let title = document.getElementById("map-title-panel");
+  title.innerHTML = the_region[0];
   // TODO: loading screen
   getPlayData(play_path).then((borders) => {
     if (borders.features.length == 0) {
@@ -177,8 +214,8 @@ const playRegion = (the_region, the_button) => {
         e.target._path.setAttribute("data-flashing", "true");
         e.target.setStyle({ color: "#ba1a1a" });
         setTimeout(() => {
-            e.target._path.setAttribute("data-flashing", "false");
-            e.target.setStyle({ color: "#75796c" });
+          e.target._path.setAttribute("data-flashing", "false");
+          e.target.setStyle({ color: "#75796c" });
         }, 500);
         if (tries == 0) {
           hint();
@@ -188,22 +225,45 @@ const playRegion = (the_region, the_button) => {
     let geoj = L.geoJSON(borders, {
       onEachFeature: (feature, layer) => {
         layer.on({ click: handleClick });
-        layer.on({ mouseover: () => {if (layer._path.getAttribute("data-chosen") != "true" && layer._path.getAttribute("data-flashing") != "true") layer.setStyle({color: "#3a33ff"})} });
-        layer.on({ mouseout: () => {if (layer._path.getAttribute("data-chosen") != "true" && layer._path.getAttribute("data-flashing") != "true") layer.setStyle({color: "#3388ff"})} });
+        layer.on({
+          mouseover: () => {
+            if (
+              layer._path.getAttribute("data-chosen") != "true" &&
+              layer._path.getAttribute("data-flashing") != "true"
+            )
+              layer.setStyle({ color: "#3a33ff" });
+          },
+        });
+        layer.on({
+          mouseout: () => {
+            if (
+              layer._path.getAttribute("data-chosen") != "true" &&
+              layer._path.getAttribute("data-flashing") != "true"
+            )
+              layer.setStyle({ color: "#3388ff" });
+          },
+        });
         nameLayerDict[
           feature.properties["name:en"] || feature.properties["name"]
         ] = layer;
       },
     }).addTo(map);
     map.fitBounds(geoj.getBounds());
+    map.options.minZoom = map.getZoom();
+    map.options.maxBounds = map.getBounds();
+    map.options.maxBoundsViscosity = 1.0;
   });
 };
 
 const expandRegion = (the_region, col) => {
-  current_path = current_path.slice(0, col)
-  active_nav_items.slice(col).forEach(elem => { elem.classList.remove("active"); });
-  active_nav_items = active_nav_items.slice(0, col)
-  while (navRow.childElementCount > col + 1) { navRow.removeChild(navRow.lastElementChild); }
+  current_path = current_path.slice(0, col);
+  active_nav_items.slice(col).forEach((elem) => {
+    elem.classList.remove("active");
+  });
+  active_nav_items = active_nav_items.slice(0, col);
+  while (navRow.childElementCount > col + 1) {
+    navRow.removeChild(navRow.lastElementChild);
+  }
   // TODO: loading screen
   return new Promise((res, rej) => {
     getRegions(current_path.concat([the_region])).then((the_list) => {
@@ -214,9 +274,9 @@ const expandRegion = (the_region, col) => {
       }
       addRegionList(the_list, col + 1);
       res();
-    })
+    });
   });
-}
+};
 
 /*
 const addRegionList = (the_list) => {
