@@ -1,3 +1,8 @@
+const nanToInf = x => {
+  if (isNaN(x)) return Infinity;
+  return x;
+}
+
 function overpass_get_subregions(path) {
   query = "";
   last_admin_level = "";
@@ -12,7 +17,7 @@ function overpass_get_subregions(path) {
   query += `rel(r.admin_level_${last_admin_level}:"subarea");
 out ids tags;`;
   return overpass_query(query).then((j) => {
-    j.elements.map((e) => {
+    return j.elements.map((e) => {
       let key = "name";
       // try to find an appropriate identifier for this subregion
       if (e.tags["ISO3166-2"]) {
@@ -25,7 +30,7 @@ out ids tags;`;
       return [
         e.tags["name:en"] || e.tags["name"],
         [key, e.tags[key]],
-        e.tags.admin_level,
+        nanToInf(parseInt(e.tags.admin_level)),
       ];
     });
   });
