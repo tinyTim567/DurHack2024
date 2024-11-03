@@ -121,14 +121,14 @@ const hint = () => {
 };
 
 function playRandom() {
-    // play random country if only continent or non is selected or selected sub region
-    if (current_path.length == 0) {
-        expandRegion(continents[Math.floor(Math.random() * continents.length)], 1).then(() => {
-            playRegion(the_list_[Math.floor(Math.random() * the_list_.length)]);
-        });
-    } else {
-        playRegion(the_list_[Math.floor(Math.random() * the_list_.length)]);
-    }
+  // play random country if only continent or non is selected or selected sub region
+  if (current_path.length == 0) {
+    expandRegion(continents[Math.floor(Math.random() * continents.length)], 1).then(() => {
+      playRegion(the_list_[Math.floor(Math.random() * the_list_.length)]);
+    });
+  } else {
+    playRegion(the_list_[Math.floor(Math.random() * the_list_.length)]);
+  }
 }
 
 const playRegion = (the_region) => {
