@@ -24,8 +24,12 @@ let names,
   nameLayerDict = {};
 
 const cmpRegions = (r1, r2) => {
-  let k1 = r1[0];
-  let k2 = r2[0];
+    let k1 = r1[0];
+    let k2 = r2[0];
+    if (r1[2] == 2) {
+        k1 = k1.replace(/[^A-Za-z]/g, '');
+        k2 = k2.replace(/[^A-Za-z]/g, '');
+    }
   if (k1 < k2) return -1;
   if (k1 > k2) return 1;
   return 0;
