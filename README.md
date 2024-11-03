@@ -2,6 +2,9 @@
 
 Test your knowledge of countries and regions using Open Street Maps.
 
+> This project has been made as part of DurHack 2024, and as such is unlikely to be maintained once the hackathon has
+> ended.
+
 ## Inspiration
 
 Using Geoguessr to procrastinate on coursework
