@@ -8,6 +8,7 @@ const continents = [
 ];
 
 const navScreen = document.getElementById("nav-screen");
+const loadScreen = document.getElementById("load-screen");
 const mapScreen = document.getElementById("map-screen");
 const navRow = document.getElementById("nav-row");
 
@@ -202,7 +203,8 @@ const playRegion = (the_region, the_button) => {
   } else {
     showMpButton.classList.add("hidden");
   }
-  // TODO: loading screen
+  navScreen.classList.add("hidden");
+  loadScreen.classList.remove("hidden");
   getPlayData(play_path).then((borders) => {
     if (borders.features.length == 0) {
         console.log("Bad game");
@@ -214,7 +216,7 @@ const playRegion = (the_region, the_button) => {
     );
     shuffleArray(names);
     maxscore = names.length * 3; // TODO: change if we change the scoring system
-    navScreen.classList.add("hidden");
+    loadScreen.classList.add("hidden");
     mapScreen.classList.remove("hidden");
     const key = "qkOKp14TlTpS6tZnCYBN";
     const map = L.map("map").setView([0, 0], 1);
