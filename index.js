@@ -184,6 +184,7 @@ function playRandom() {
     expandRegion(
       continents[Math.floor(Math.random() * continents.length)],
       1,
+      null,
     ).then(() => {
       playRegion(the_list_[Math.floor(Math.random() * the_list_.length)]);
     });
@@ -192,7 +193,16 @@ function playRandom() {
   }
 }
 
-const playRegion = (the_region, the_button) => {
+const removeRegionButtons = (the_item) => {
+  the_item.removeChild(the_item.lastElementChild);
+  the_item.removeChild(the_item.lastElementChild);
+
+  let the_text = document.createElement("p");
+  the_text.innerText = "This region has no internal data.";
+  the_item.appendChild(the_text);
+}
+
+const playRegion = (the_region, the_item) => {
   play_path = current_path
     .filter((element) => element[2] < the_region[2])
     .concat([the_region]);
@@ -207,9 +217,10 @@ const playRegion = (the_region, the_button) => {
   loadScreen.classList.remove("hidden");
   getPlayData(play_path).then((borders) => {
     if (borders.features.length == 0) {
-        console.log("Bad game");
-        the_button.classList.add("hidden");
-        return;
+      removeRegionButtons(the_item);
+      loadScreen.classList.add("hidden");
+      navScreen.classList.remove("hidden");
+      return;
     }
     names = borders.features.map(
       (f) => f.properties["name:en"] || f.properties["name"],
@@ -287,7 +298,7 @@ const playRegion = (the_region, the_button) => {
   });
 };
 
-const expandRegion = (the_region, col) => {
+const expandRegion = (the_region, col, the_item) => {
   current_path = current_path.slice(0, col);
   active_nav_items.slice(col).forEach((elem) => {
     elem.classList.remove("active");
@@ -304,8 +315,12 @@ const expandRegion = (the_region, col) => {
       if (the_region.length != 0) {
         current_path.push(the_region);
       }
-      addRegionList(the_list, col + 1);
-      res();
+      if (the_list.length == 0) {
+        if (the_item !== null) removeRegionButtons(the_item);
+      } else {
+        addRegionList(the_list, col + 1);
+        res();
+      }
     });
   });
 };
@@ -393,10 +408,11 @@ const addRegionList = (the_list, col) => {
     the_item.classList.add("card");
 
     let the_name = document.createElement("span");
+    
     the_name.classList.add("nav-name");
     the_name.innerText = element[0];
     the_item.appendChild(the_name);
-
+    
     if (element[2] > 1) {
       let the_button = document.createElement("button");
       the_button.classList.add("btn");
@@ -404,28 +420,28 @@ const addRegionList = (the_list, col) => {
       the_button.classList.add("nav-play");
       the_button.innerText = "Play";
       the_button.addEventListener("click", () => {
-        playRegion(element, the_button);
+        playRegion(element, the_item);
       });
       the_item.appendChild(the_button);
     }
-
+    
     let the_arrow = document.createElement("button");
     the_arrow.classList.add("btn");
     the_arrow.classList.add("btn-outline-secondary");
     the_arrow.classList.add("nav-expand");
     the_arrow.innerHTML = '<i class="bi bi-chevron-right"></i>';
     the_arrow.addEventListener("click", () => {
-      expandRegion(element, col);
+      expandRegion(element, col, the_item);
       the_item.classList.add("active");
       active_nav_items.push(the_item);
     });
     the_item.appendChild(the_arrow);
 
     the_col.appendChild(the_item);
-
-    // any other formatting for the column, adding a header etc.
-    navRow.appendChild(the_col);
   });
+
+  // any other formatting for the column, adding a header etc.
+  navRow.appendChild(the_col);
 };
 
 window.addEventListener("load", () => {
