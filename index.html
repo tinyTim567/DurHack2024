@@ -34,11 +34,25 @@
         </header>
         <div class="container-sm" id="nav-screen">
             <div class="instructions">
-                <p>
+                <p class="mb-0">
                     Choose an area for your game from the list below or<button class="text-button" onclick="playRandom()">start a random game</button>
                 </p>
             </div>
             <div class="row" id="nav-row"></div>
+            <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+                <div class="col-12 text-center">
+                  <span class="mb-3 mb-md-0 text-body-secondary">
+                    Map data &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors. <br/>
+                    Open Map Guesser was built by <a href="https://eddiehart.dev">Eddie Hart</a>, Joe Shepherd, <a href="https://thomasmcknight.dev/">Thomas McKnight</a>, and <a href="https://github.com/allc">allc</a> as part of <a href="https://durhack.com/">DurHack 2024</a>.
+                    <a href="https://github.com/tinyTim567/Open-Map-Guesser">View source on GitHub.</a></span>
+                </div>
+            
+                <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+                  <li class="ms-3"><a class="text-body-secondary" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#twitter"></use></svg></a></li>
+                  <li class="ms-3"><a class="text-body-secondary" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#instagram"></use></svg></a></li>
+                  <li class="ms-3"><a class="text-body-secondary" href="#"><svg class="bi" width="24" height="24"><use xlink:href="#facebook"></use></svg></a></li>
+                </ul>
+              </footer>
         </div>
 
         <div class="hidden" id="map-screen">
